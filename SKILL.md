@@ -9,7 +9,8 @@ description: >-
   Oracle Hospitality, OHIP, IFC8, OXI, night audit, rate derivation, hospitality PMS configuration,
   channel manager integration, or hotel property management system tasks. All content is factual,
   public, vendor-documented behaviour. Where behaviour is observed rather than documented it is
-  flagged as such.
+  flagged as such. Includes a symptom-driven Issue Resolution Engine that diagnoses live OPERA
+  faults by symptom and routes to the matching internal section.
 license: MIT
 ---
 
@@ -132,11 +133,54 @@ When verification is needed, the authoritative public sources are the Oracle Hel
 OPERA Cloud and OPERA 5 documentation libraries, the OHIP Developer Portal API documentation,
 and Oracle's published hospitality API specifications. This skill summarises those; it does not
 replace checking them for a specific release.
-=======
-name: opera-cloud-hospitality-expert
-description: >
-  Expert Oracle Hospitality OPERA Cloud (v25.5), OPERA 5 PMS, OHIP API, fiscal exports (SAF-T Portugal/Spain), SUN back-office integration, IFC8 interfaces, channel manager migration, Business Events, and Distribution APIs. Trigger on any mention of OPERA, OPERA Cloud, OHIP, IFC8, SAF-T, SUN export, night audit, rate derivation, fiscal compliance, or Oracle Hospitality.
+
+## ISSUE RESOLUTION ENGINE
+
+When OPERA breaks, run this before proposing any fix. Diagnose root cause. No blind restarts. This skill is self-contained, so the routes below point to internal sections of this file.
+
+### Step 1: Triage (always establish first)
+
+- When did it start. After a patch, config change, or deployment
+- Who is affected. One user, one department, or property-wide
+- What changed recently
+- Exact error text and error code
+- Reproducible or intermittent
+
+### Step 2: Isolate scope
+
+- Workstation only. Test from a second workstation
+- Network. Test latency, bandwidth, packet loss
+- Server. Test from multiple clients
+- Data. Test the specific transaction or report
+- Integration. Test the API endpoint or file transfer
+
+### Step 3: Symptom decision tree
+
+Match the symptom. Check the first item. Route to the internal section for the full procedure.
+
+| Symptom | First check | Route to |
+|---------|-------------|----------|
+| Cannot connect to server or timeout | Port, firewall, server process, token validity | 21. Debugging > API Not Returning Data + 14. Error Handling |
+| User cannot log in | Account lock, role assignment, task permission | 21. Debugging > API Not Returning Data + 2. Authentication |
+| Application slow | Latency, server load, rate limiting | 14. Error Handling > Rate Limits |
+| Reports slow to generate | Query scope, DB load, schedule contention | 17. Reports & Analytics + 21. Debugging |
+| Folio amounts incorrect | Transaction code mapping, posting rules, package split | 4.3 Cashiering + 11. SUN Back Office + 10. Fiscal Compliance |
+| Reservation missing | Search filters, status, business date boundary | 4.1 Reservations + 12. Night Audit > Business Date vs System Date |
+| IFC8 interface file not generated | IFC8 service, message queue, schema mismatch | 9. IFC8 & Interface Configuration + 21. Debugging |
+| Payment authorisation failed | OPI/EFT config, token exchange, custom data tab | 9. OXI/Exchange Interface Configuration |
+| Business Events not firing | Subscription status colour, conditions too tight, streaming disconnect | 7. Business Events & Streaming + 21. Debugging > Business Events Not Firing |
+| Streaming connection down | Red status 60+ min, OAuth token expiry, network | 7. Streaming Connection Alerts |
+| SAF-T validation fail | Sequence gap, missing NIF, CFIDCL not set | 10.1 Portugal Fiscal + 21. Debugging > Fiscal Export Issues |
+| SUN export out of balance | Transaction code to GL mapping, unmapped codes | 11. Common SUN Export Issues + 21. Debugging |
+| Formula save fails silently | ABS or GREATEST used, pasted encoding artefacts | 11. SUN Export Formula Logic + Formula Engine Constraints |
+| Night audit stuck | Open cashiers, interim reservation states, interface errors | 12. Night Audit & End of Day + 21. Debugging > Night Audit Stuck |
+| Channel rates wrong after migration | OXI translation layer, external code mapping | Channel Manager Migration Reference + 8. Distribution APIs |
+| API returns 401 403 409 422 429 | Token, role, duplicate, business rule, rate limit | 14. Error Handling & Rate Limits |
+
+For multi-domain faults, read more than one section and synthesise. Touch UAT before PRD. PRD changes require Jorge and Abel sign-off.
+
 ---
+
 
 # OPERA Cloud & Oracle Hospitality Master Agent
 ## Combined Super Skill: Full PMS + OPERA 5 + OHIP + APIs + Fiscal + SUN + Channel Migration + Integrations
@@ -1462,5 +1506,4 @@ OPERA Cloud releases quarterly:
 
 ---
 
-*This skill synthesizes Oracle Hospitality Integration Platform documentation, OPERA Cloud 25.4/25.5 feature summaries, Distribution API specs, and operational context for EMEA Iberia fiscal compliance work. Last updated: 2026-03-15.*
->>>>>>> b2201f1bf0ac50800ee09a2c5091f887b74713ef
+*This skill synthesizes Oracle Hospitality Integration Platform documentation, OPERA Cloud 25.4/25.5 feature summaries, Distribution API specs, and operational context for EMEA Iberia fiscal compliance work. Last updated: 2026-06-08.*
